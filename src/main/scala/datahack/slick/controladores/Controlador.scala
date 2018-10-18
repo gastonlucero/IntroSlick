@@ -36,7 +36,7 @@ class Controlador extends Configuraciones {
     )
     daoImpl.insertarLista(dispositivos)
     daoImpl.obtenerTodos() onComplete {
-      case Success(lista) => logger.info(s"Dispositivos = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Todos los Dispositivos = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los dispositivos", e)
     }
     daoImpl.actualizar(dispositivo, "Temperatura") onComplete {
@@ -44,7 +44,7 @@ class Controlador extends Configuraciones {
       case Failure(e) => logger.error(s"Error al actaulizar dispositivo", e)
     }
     daoImpl.obtenerTodos() onComplete {
-      case Success(lista) => logger.info(s"Dispositivos = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Todos los dispositivos Dispositivos = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los dispositivos", e)
     }
     daoImpl.actualizar(dispositivo, "Infrarrojo", "Arduino") onComplete {
@@ -52,12 +52,12 @@ class Controlador extends Configuraciones {
       case Failure(e) => logger.error(s"Error al actaulizar dispositivo", e)
     }
     daoImpl.obtenerTodos() onComplete {
-      case Success(lista) => logger.info(s"Dispositivos = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Todos los dispositivos Dispositivos = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los dispositivos", e)
     }
     daoImpl.upsert(dispositivo.copy(ultimaPosicion = Some("-32.12312,-68.1231")))
     daoImpl.obtenerTodos() onComplete {
-      case Success(lista) => logger.info(s"Dispositivos = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Todos los dispositivos Dispositivos = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los dispositivos", e)
     }
 
@@ -65,13 +65,18 @@ class Controlador extends Configuraciones {
 
   def testMensajes() = {
     daoMensajesImpl.insertar(Mensaje(texto = "mensaje", dispositivoImei = "1"))
+
     daoMensajesImpl.obtenerTodos() onComplete {
-      case Success(lista) => logger.info(s"Mensajes = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Todos los Mensajes = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los mensajes", e)
     }
 
     daoImpl.obtenerMensajesPorDispositivoMonadic("1") onComplete {
-      case Success(lista) => logger.info(s"Mensajes = ${lista.mkString(",")}")
+      case Success(lista) => logger.info(s"Monadic Query - Mensajes = ${lista.mkString(",")}")
+      case Failure(e) => logger.error(s"Error al obtener todos los mensajes", e)
+    }
+    daoImpl.obtenerMensajesPorDispositivoAplicativo("1") onComplete {
+      case Success(lista) => logger.info(s"Aplicative Query - Mensajes = ${lista.mkString(",")}")
       case Failure(e) => logger.error(s"Error al obtener todos los mensajes", e)
     }
   }

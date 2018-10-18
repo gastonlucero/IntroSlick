@@ -3,7 +3,11 @@ package datahack.slick.utils
 import com.typesafe.config.ConfigFactory
 import org.slf4j.LoggerFactory
 
+/**
+  * Trait comun para acceder a las configuraciones
+  */
 trait Configuraciones {
+
   val logger = LoggerFactory.getLogger("Datahack")
 
   lazy val config = {

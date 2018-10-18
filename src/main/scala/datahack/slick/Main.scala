@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory
 
 object Main extends App {
 
-
   val logger = LoggerFactory.getLogger("Datahack")
 
-  logger.info("Datahack Slick (presionar cualquier tecla para salir)")
+  logger.info("BootCamp Slick (presionar cualquier tecla para salir)")
 
+  logger.info("Iniciando clase Crntrolador")
   val controlador = new Controlador
   controlador.validarEsquemaTablas()
   controlador.testDispositivos()

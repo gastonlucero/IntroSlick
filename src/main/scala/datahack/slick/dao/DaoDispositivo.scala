@@ -35,6 +35,9 @@ class DaoDispositivo extends Configuraciones {
     nuevo
   }
 
+  /**
+    * Insertar con transacciones
+    */
   def insertarTx(dispositivo: Dispositivo) = {
     logger.info("Insertando dispositivo con transacciones")
     val accionTx = (tablaDispositivo returning tablaDispositivo += dispositivo).transactionally
@@ -76,7 +79,7 @@ class DaoDispositivo extends Configuraciones {
 
 
   def obtenerTodos(): Future[Seq[Dispositivo]] = {
-    println(tablaDispositivo.result.statements.mkString)
+    logger.info(tablaDispositivo.result.statements.mkString)
     db.run(tablaDispositivo.result)
   }
 
@@ -130,8 +133,8 @@ class DaoDispositivo extends Configuraciones {
 
   def obtenerMensajesPorDispositivoAplicativo(imei: String) = {
     val queryMensajes = for {
-      mensajes <- tablaDispositivo.filter(_.imei === imei) join tablaMensaje on (_.imei === _.dispositivoImei)
-    } yield mensajes
+      (dispositivos, mensajes) <- tablaDispositivo.filter(_.imei === imei) join tablaMensaje on (_.imei === _.dispositivoImei)
+    } yield mensajes.texto
     db.run(queryMensajes.result)
   }
 

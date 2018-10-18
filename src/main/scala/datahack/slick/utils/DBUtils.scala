@@ -8,9 +8,12 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
 
-//singleton
+/**
+  * Singleton que tiene a conexion a la bd,la definición de las tablas y la creación inicial del esquema
+  */
 object DBUtils extends Configuraciones {
 
+  //Conexión a la bd
   lazy val db = Database.forConfig("datahack")
 
   val esquema = config.getString(NombreEsquema)
@@ -30,6 +33,7 @@ object DBUtils extends Configuraciones {
 
   class TablaMensajes(tag: Tag) extends Table[Mensaje](tag, Some(esquema), nombreTablaMensaje) {
 
+    //Automaticamente nos crea un indice sobre este campo y una sequencia autoincremental
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def texto = column[String]("texto")
@@ -40,6 +44,7 @@ object DBUtils extends Configuraciones {
   }
 
   val tablaMensaje = TableQuery[TablaMensajes]
+
 
   class TablaDispositivo(tag: Tag) extends Table[Dispositivo](tag, Some(esquema), nombreTablaDispositivo) {
     def id = column[String]("id")
@@ -54,7 +59,7 @@ object DBUtils extends Configuraciones {
 
     def * = (id, imei, marca, modelo, ultimaPosicion) <> (Dispositivo.tupled, Dispositivo.unapply)
 
-    def pk = primaryKey("dispositivo_pk", id)
+    def pk = primaryKey("dispositivo_pk", id) //Automaticamente nos crea un indice sobre este campo
   }
 
   //  def id = column[String]("id", O.PrimaryKey)
