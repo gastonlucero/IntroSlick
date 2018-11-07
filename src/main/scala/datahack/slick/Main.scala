@@ -9,7 +9,7 @@ object Main extends App {
 
   logger.info("BootCamp Slick (presionar cualquier tecla para salir)")
 
-  logger.info("Iniciando clase Crntrolador")
+  logger.info("Iniciando clase Controlador")
   val controlador = new Controlador
   controlador.validarEsquemaTablas()
   controlador.testDispositivos()

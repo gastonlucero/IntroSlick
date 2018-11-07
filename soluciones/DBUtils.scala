@@ -36,11 +36,11 @@ object DBUtils extends Configuraciones {
     //Automaticamente nos crea un indice sobre este campo y una sequencia autoincremental
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
-    def texto = ???
+    def texto = column[String]("texto")
 
-    def dispositivoImei = ???
+    def dispositivoImei = column[String]("id_dispositivo")
 
-    def * = ???
+    def * = (id ?, texto, dispositivoImei) <> (Mensaje.tupled, Mensaje.unapply)
   }
 
   val tablaMensaje = TableQuery[TablaMensajes]

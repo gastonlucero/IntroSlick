@@ -31,7 +31,7 @@ class DaoDispositivo extends Configuraciones {
 
   def insertar(dispositivo: Dispositivo): Future[Dispositivo] = {
     logger.info("Insertando dispositivo")
-    val nuevo: Future[Dispositivo] = ???
+    val nuevo: Future[Dispositivo] = db.run(tablaDispositivo returning tablaDispositivo += dispositivo)
     nuevo
   }
 
@@ -50,37 +50,37 @@ class DaoDispositivo extends Configuraciones {
   }
 
   def insertarLista(dispositivos: Seq[Dispositivo]) = {
-    val nuevo: Future[Option[Int]] = ???
+    val nuevo = db.run(tablaDispositivo ++= dispositivos)
     nuevo
   }
 
   def actualizar(dispositivo: Dispositivo, nuevoModelo: String): Future[Int] = {
     val query = for {
-      viejoDispositivo <- tablaDispositivo if ???
+      viejoDispositivo <- tablaDispositivo if viejoDispositivo.id === dispositivo.id
     } yield viejoDispositivo.modelo
-    val accion = ???
+    val accion = query.update(nuevoModelo)
     db.run(accion)
   }
 
   def actualizar(dispositivo: Dispositivo, nuevoModelo: String, nuevaMarca: String) = {
     db.run(tablaDispositivo.filter(_.id === dispositivo.id)
-      .map(???)
-      .update(???)
+      .map(dispositivo => (dispositivo.modelo, dispositivo.marca))
+      .update((nuevoModelo, nuevaMarca)))
   }
 
   def upsert(dispositivoActualizado: Dispositivo) = {
-    val cantidadActualizada: Future[Int] = ???
+    val cantidadActualizada: Future[Int] = db.run(tablaDispositivo.insertOrUpdate(dispositivoActualizado))
   }
 
   def eliminar(imei: String) = {
-    val eliminado: Future[Int] = ???
+    val eliminado: Future[Int] = db.run(tablaDispositivo.filter(_.imei === imei).delete)
     eliminado
   }
 
 
   def obtenerTodos(): Future[Seq[Dispositivo]] = {
     logger.info(tablaDispositivo.result.statements.mkString)
-    ???
+    db.run(tablaDispositivo.result)
   }
 
   def obtenerTodosOrdenados(): Future[Seq[Dispositivo]] = {
@@ -99,13 +99,13 @@ class DaoDispositivo extends Configuraciones {
 
   //Filtro y Map
   def obtenerSoloImeiPorMarca(marca: String): Future[Seq[String]] = {
-    val soloImeis: Future[Seq[String]] = ???
+    val soloImeis: Future[Seq[String]] = db.run(tablaDispositivo.filter(_.marca === marca).map(_.imei).result)
     soloImeis
   }
 
   //Filtro y Map
   def obtenerPrimerImeiPorMarca(marca: String): Future[String] = {
-    val soloImeis: Future[String] = ???
+    val soloImeis: Future[String] = db.run(tablaDispositivo.filter(_.marca === marca).map(_.imei).result.head)
     soloImeis
   }
 
@@ -125,10 +125,10 @@ class DaoDispositivo extends Configuraciones {
 
   def obtenerMensajesPorDispositivoMonadic(imei: String) = {
     val queryMensajes = for {
-      dispositivos <- ???
-      mensajes <- ???
-    } yield mensajes //obtener solo el texto de los mensajes
-    ???
+      dispositivos <- tablaDispositivo.filter(_.imei === imei)
+      mensajes <- tablaMensaje if (dispositivos.imei === mensajes.dispositivoImei)
+    } yield mensajes.texto
+    db.run(queryMensajes.result)
   }
 
   def obtenerMensajesPorDispositivoAplicativo(imei: String) = {

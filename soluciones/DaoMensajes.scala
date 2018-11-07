@@ -28,14 +28,14 @@ class DaoMensajes extends Configuraciones {
 
 
   def insertar(mensaje: Mensaje): Future[Mensaje] = {
-    ???
+    db.run(tablaMensaje returning tablaMensaje += mensaje)
   }
 
   def eliminarPorDispositivo(imei: String) = {
-    ???
+    db.run(tablaMensaje.filter(_.dispositivoImei === imei).delete)
   }
 
   def obtenerTodos() = {
-    ???
+    db.run(tablaMensaje.result)
   }
 }
